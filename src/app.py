@@ -60,3 +60,5 @@ def todo(message, list_):
         index, command = get_index_and_command(tasks)
         if command == 'del':
             tasks[index].delete()
+        elif command == 'done':
+            tasks[index].toggle_done()

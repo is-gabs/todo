@@ -19,13 +19,6 @@ def add_object(obj) -> None:
         session.commit()
 
 
-def update_object(obj) -> None:
-    session = Session.object_session(obj)
-
-    with session.begin() as session:
-        session.commit()
-
-
 def delete_object(obj) -> None:
     with Session(create_engine(db_url)) as session:
         session.delete(obj)
