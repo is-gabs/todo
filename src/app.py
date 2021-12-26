@@ -1,7 +1,9 @@
 from typing import List, Tuple
 
 import click
+from click import Abort
 
+from src.exceptions import AppCoreError
 from src.task.helpers import build_task, get_tasks
 from src.task.model import TaskModel
 
@@ -52,10 +54,18 @@ def get_index_and_command(tasks: List[TaskModel]) -> Tuple[int, str]:
 def todo(message, list_):
     if message:
         task = build_task(message)
-        task.save()
+        try:
+            task.save()
+        except AppCoreError:
+            click.echo('Error while saving task.', err=True)
+            raise Abort()
 
     elif list_:
-        tasks = get_tasks()
+        try:
+            tasks = get_tasks()
+        except AppCoreError:
+            click.echo('Error while getting tasks from base.', err=True)
+            raise Abort()
 
         if tasks:
             show_task_list(tasks)
