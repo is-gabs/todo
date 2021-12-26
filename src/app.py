@@ -56,9 +56,13 @@ def todo(message, list_):
 
     elif list_:
         tasks = get_tasks()
-        show_task_list(tasks)
-        index, command = get_index_and_command(tasks)
-        if command == 'del':
-            tasks[index].delete()
-        elif command == 'done':
-            tasks[index].toggle_done()
+
+        if tasks:
+            show_task_list(tasks)
+            index, command = get_index_and_command(tasks)
+            if command == 'del':
+                tasks[index].delete()
+            elif command == 'done':
+                tasks[index].toggle_done()
+        else:
+            click.echo('Everything clean here, good job!')
