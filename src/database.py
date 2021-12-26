@@ -24,3 +24,9 @@ def update_object(obj) -> None:
 
     with session.begin() as session:
         session.commit()
+
+
+def delete_object(obj) -> None:
+    with Session(create_engine(db_url)) as session:
+        session.delete(obj)
+        session.commit()

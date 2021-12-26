@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy import Boolean, Column, Date, Integer, Text
 from sqlalchemy.ext.declarative import declarative_base
 
-from src.database import add_object, update_object
+from src.database import add_object, delete_object, update_object
 
 Base = declarative_base()
 
@@ -23,3 +23,6 @@ class TaskModel(Base):
 
     def update(self) -> None:
         update_object(self)
+
+    def delete(self) -> None:
+        delete_object(self)

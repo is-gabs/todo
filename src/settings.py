@@ -10,7 +10,6 @@ class Config:
 
     @property
     def is_development(self):
-        print(self.env)
         return self.env == DEVELOPMENT
 
 
