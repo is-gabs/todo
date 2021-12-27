@@ -5,7 +5,7 @@ description = ""
 authors = ["Gabriel Sarmento <gabrielfs.bot@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 click = "^8.0.3"
 rich = "^10.16.1"
 SQLAlchemy = "^1.4.29"
