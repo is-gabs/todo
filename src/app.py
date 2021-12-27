@@ -2,6 +2,8 @@ from typing import List, Tuple
 
 import click
 from click import Abort
+from rich.console import Console
+from rich.table import Table
 
 from src.exceptions import AppCoreError
 from src.task.helpers import build_task, get_tasks
@@ -13,16 +15,28 @@ COMMANDS = (
 )
 
 
-def show_task_list(tasks: List[TaskModel]) -> None:
+def draw_task_list(tasks: List[TaskModel]) -> None:
+    table = Table(title='')
+    table.add_column('I', justify='center')
+    table.add_column('Task', justify='left')
+    table.add_column('Done', justify='center')
+
     for index, task in zip(range(len(tasks)), tasks):
-        click.echo(
-            f'Index: {index} | Task: {task.message} | Done: {task.is_done}'
+        table.add_row(
+            str(index),
+            task.message.lower(),
+            '✓' if task.is_done else '☐'
         )
+
+    Console().print(table)
 
 
 def get_index_and_command(tasks: List[TaskModel]) -> Tuple[int, str]:
     try:
-        index, command = click.prompt('Command').split(' ')
+        _input = click.prompt('Command')
+        if _input == 'exit':
+            raise Abort()
+        index, command = _input.split(' ')
         index = int(index)
         assert command in COMMANDS
     except ValueError:
@@ -30,6 +44,7 @@ def get_index_and_command(tasks: List[TaskModel]) -> Tuple[int, str]:
             message='Invalid sixtax, use "[index] [command]" format.',
             err=True
         )
+        raise Abort()
     except AssertionError:
         click.echo(
             message=(
@@ -38,6 +53,7 @@ def get_index_and_command(tasks: List[TaskModel]) -> Tuple[int, str]:
             ),
             err=True
         )
+        raise Abort()
     try:
         assert index < len(tasks) and index >= 0
     except AssertionError:
@@ -45,7 +61,17 @@ def get_index_and_command(tasks: List[TaskModel]) -> Tuple[int, str]:
             message='Index out of range.',
             err=True
         )
+        raise Abort()
     return index, command
+
+
+def view_task_list(tasks: List[TaskModel]):
+    draw_task_list(tasks)
+    index, command = get_index_and_command(tasks)
+    if command == 'del':
+        tasks[index].delete()
+    elif command == 'done':
+        tasks[index].toggle_done()
 
 
 @click.command()
@@ -68,11 +94,6 @@ def todo(message, list_):
             raise Abort()
 
         if tasks:
-            show_task_list(tasks)
-            index, command = get_index_and_command(tasks)
-            if command == 'del':
-                tasks[index].delete()
-            elif command == 'done':
-                tasks[index].toggle_done()
+            view_task_list(tasks)
         else:
             click.echo('Everything clean here, good job!')
