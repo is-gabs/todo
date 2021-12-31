@@ -17,6 +17,10 @@ else:
     db_url = 'sqlite://~/.todo/config/db.db'
 
 
+def _get_engine():
+    return create_engine(db_url)
+
+
 class TaskModel(Base):
     __tablename__ = 'tasks'
 
@@ -25,36 +29,24 @@ class TaskModel(Base):
     is_done = Column(Boolean, default=False, index=True)
 
     def save(self) -> None:
-        add_object(self)
+        try:
+            with Session(create_engine(db_url)) as session:
+                session.add(self)
+                session.commit()
+        except SQLAlchemyError:
+            raise AppCoreError()
 
     def delete(self) -> None:
-        delete_object(self)
+        try:
+            with Session(create_engine(db_url)) as session:
+                session.delete(self)
+                session.commit()
+        except SQLAlchemyError:
+            raise AppCoreError()
 
     def toggle_done(self) -> None:
         self.is_done = not self.is_done
-        add_object(self)
-
-
-def _get_engine():
-    return create_engine(db_url)
-
-
-def add_object(obj) -> None:
-    try:
-        with Session(create_engine(db_url)) as session:
-            session.add(obj)
-            session.commit()
-    except SQLAlchemyError:
-        raise AppCoreError()
-
-
-def delete_object(obj) -> None:
-    try:
-        with Session(create_engine(db_url)) as session:
-            session.delete(obj)
-            session.commit()
-    except SQLAlchemyError:
-        raise AppCoreError()
+        self.save()
 
 
 def get_tasks() -> List[TaskModel]:
