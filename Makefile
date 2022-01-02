@@ -19,3 +19,9 @@ run:
 
 setup-db:
 	@poetry run alembic upgrade head
+
+test: clean
+	@poetry run pytest
+
+requirements: clean
+	@poetry install
