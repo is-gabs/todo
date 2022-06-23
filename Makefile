@@ -6,22 +6,16 @@ clean:
 lint: clean flake8 check-python-import
 
 flake8:
-	@poetry run flake8 --show-source src/
+	@flake8 --show-source src/
 
 check-python-import:
-	@poetry run isort --check-only src/
+	@isort --check-only src/
 
 fix-python-import:
-	@poetry run isort src/
+	@isort src/
 
 run:
-	@poetry run python run.py
+	@python run.py
 
 setup-db:
-	@poetry run alembic upgrade head
-
-test: clean
-	@poetry run pytest
-
-requirements: clean
-	@poetry install
+	@alembic upgrade head
