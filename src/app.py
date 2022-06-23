@@ -1,7 +1,7 @@
 import click
 from click import Abort
 
-from src.backends import backend
+from src.sql_database.utils import build_task, get_tasks
 from src.cli import view_task_list
 from src.exceptions import AppCoreError
 
@@ -11,7 +11,7 @@ from src.exceptions import AppCoreError
 @click.option('-l', '--list', 'list_', is_flag=True)
 def todo(message, list_):
     if message:
-        task = backend.build_task(message)
+        task = build_task(message)
         try:
             task.save()
         except AppCoreError:
@@ -20,7 +20,7 @@ def todo(message, list_):
 
     elif list_:
         try:
-            tasks = backend.get_tasks()
+            tasks = get_tasks()
         except AppCoreError:
             click.echo('Error while getting tasks from base.', err=True)
             raise Abort()
